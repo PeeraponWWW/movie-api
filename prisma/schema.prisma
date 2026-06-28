@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator prismabox { 
+  provider = "prismabox"
+  typeboxImportDependencyName = "elysia"
+  typeboxImportVariableName = "t"
+  inputModel = true
+  output   = "../generated/prismabox"
+}
+
+model movie{
+  id String @id @default(uuid())
+  title String
+  synopsis String
+  duration Int @default(0)
+  releaseDate DateTime
+  genres movie_genre[]
+  actors movie_actor[]
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  expiresAt DateTime? @db.Timestamptz(3)
+}
+
+model genre {
+  id String @id @default(uuid())
+  name String
+  movie movie_genre[]
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  expiresAt DateTime? @db.Timestamptz(3)
+}
+
+model actor {
+  id String @id @default(uuid())
+  name String
+  movie movie_actor[]
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  expiresAt DateTime? @db.Timestamptz(3)
+}
+
+model movie_genre {
+  id String @id @default(uuid())
+  movie_id String
+  genre_id String
+  movie movie @relation(fields: [movie_id], references: [id])
+  genre genre @relation(fields: [genre_id], references: [id])
+}
+
+model movie_actor {
+  id String @id @default(uuid())
+  movie_id String
+  actor_id String
+  movie movie @relation(fields: [movie_id], references: [id])
+  actor actor @relation(fields: [actor_id], references: [id])
+}
